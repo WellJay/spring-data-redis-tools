@@ -19,6 +19,32 @@ import com.brandbigdata.rep.redis.inter.AbstractBaseRedisDao;
 @Repository
 public class StringRedisDao extends AbstractBaseRedisDao<String, Object> {
 
+	// ----------------------------------------Object----------------------------------------
+	/**
+	 * 设置对象
+	 * 
+	 * @param key
+	 * @param object
+	 * @param timeout
+	 * @param 对象class
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean addObject(final String key, final Object object, final Long timeout, Class<?> clazz) throws BbdException {
+			redisTemplate.opsForValue().set(key, clazz.cast(object));
+			return true;
+	}
+
+	/**
+	 * 获得对象
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Object getObject(final String key) {
+		return redisTemplate.opsForValue().get(key);
+	}
+	
 	// ---------------------------------------String-----------------------------------------
 
 	/**
