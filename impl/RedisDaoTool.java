@@ -104,7 +104,10 @@ public class StringRedisDao extends AbstractBaseRedisDao<String, Object> {
 	public String getString(final String key) {
 		String value = redisTemplate.execute(new RedisCallback<String>() {
 			public String doInRedis(RedisConnection connection) throws DataAccessException {
-				return connection.get(key.getBytes()).toString();
+				byte[] result = connection.get(key.getBytes());
+				if(result != null && result.length > 0)
+					return new String(result);
+				return null;
 			}
 		});
 		return value;
