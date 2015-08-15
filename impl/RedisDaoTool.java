@@ -1,4 +1,4 @@
-package com.brandbigdata.rep.redis.impl;
+﻿package com.brandbigdata.rep.redis.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,20 +223,13 @@ public class StringRedisDao extends AbstractBaseRedisDao<String, Object> {
 	 * 
 	 * @param key
 	 */
-	public void delete(String key) {
-		ArrayList<String> arrayList = new ArrayList<String>();
-		arrayList.add(key);
-		delete(arrayList);
-	}
-
-	/**
-	 * 删除多个
-	 * 
-	 * @param keys
-	 */
-	public void delete(List<String> keys) {
-		redisTemplate.delete(keys);
-	}
+	public void delete(final String key) {
+        redisTemplate.execute(new RedisCallback<Long>() {
+            public Long doInRedis(RedisConnection connection) throws DataAccessException {
+                return connection.del(key.getBytes());
+            }
+        });
+    	}
 	
 	
 	//----------------------------------------------------队列操作--------------------------------------------------
