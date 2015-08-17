@@ -26,9 +26,9 @@ spring data redis 封装工具类
 
 	<bean id="jedisConnFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.password}"
-		p:pool-config-ref="poolConfig" />
+		p:hostName="${redis.host}" p:port="${redis.port}" p:password="${redis.password}"
+		p:poolConfig-ref="poolConfig" />
 	<!-- redis template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
-		p:connection-factory-ref="jedisConnFactory" />
+		p:connectionFactory-ref="jedisConnFactory" />
 ```
