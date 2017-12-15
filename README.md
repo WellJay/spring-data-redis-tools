@@ -68,7 +68,7 @@ public class RedisConfiguration {
      * RedisTemplate
      * 从执行时间上来看，JdkSerializationRedisSerializer是最高效的（毕竟是JDK原生的），但是是序列化的结果字符串是最长的。
      * JSON由于其数据格式的紧凑性，序列化的长度是最小的，时间比前者要多一些。
-     *  所以个人的选择是倾向使用JacksonJsonRedisSerializer作为POJO的序列器。 
+     * 所以个人的选择是倾向使用JacksonJsonRedisSerializer作为POJO的序列器。 
      */
     @Bean
     public RedisTemplate redisTemplate(JedisConnectionFactory jedisConnectionFactory) {
@@ -93,10 +93,10 @@ public class RedisConfiguration {
 ## How To Use
 1、注入util方式，适用于复杂的业务处理
 ```java
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
+@Autowired
+private RedisCacheUtil redisCacheUtil;
 ```
 2、Spring注解方式适用于简单的数据缓存
 ```java
-    @Cacheable(value = Constants.Redis.SYSTEM, key = ACTIONS_CACHE_KEY)
+@Cacheable(value = Constants.Redis.SYSTEM, key = ACTIONS_CACHE_KEY)
 ```
