@@ -1,5 +1,5 @@
 # spring-data-redis-tools
-- redisTemplate封装工具类  
+- RedisTemplate封装工具类  
 - 可视化分布式ID生成器  
 - 近期会持续增加分布式锁等功能
 ***
