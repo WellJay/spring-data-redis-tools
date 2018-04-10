@@ -1,8 +1,3 @@
-/**
- * @author wenjie
- * @create 2017-06-15 19:09
- **/
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
@@ -10,6 +5,10 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author wenjie
+ * @create 2017-06-15 19:09
+ **/
 @Component
 public class RedisCacheUtil<T> {
 
