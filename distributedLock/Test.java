@@ -3,13 +3,14 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-public class Test {
+public class ApplicationTests {
 
     @Test
     public void distributedLock() throws InterruptedException {
@@ -29,31 +30,31 @@ public class Test {
     }
 
     class Tester implements Runnable {
+
+        public static final int RANDOM_NUMBER_RANGE = 3;
+
         @Override
         public void run() {
-            //虚拟requestID
-            String requestId = UUID.randomUUID().toString();
-            while(true) {
-                boolean result = RedisLockTool.tryGetDistributedLock("test", requestId, 60);
-                if (result) {
-                    System.out.println(Thread.currentThread().getName() + "： 得到锁");
-                    break;
-                } else {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
+            //获取锁， key：caller className&method   value:Current Thread Id
+            //也可以传参 key value 可选[expireSecond loopTimes sleepInterval]
+            boolean result = RedisLockTool.tryGetDistributedLock();
+            if (result) {
+                System.out.println(Thread.currentThread().getName() + "： get lock");
+            } else {
+                System.err.println(Thread.currentThread().getName() + "： get lock timeout");
+            }
+
+            //if get the lock
+            if (result) {
+                try {
+                    TimeUnit.SECONDS.sleep(new Random().nextInt(RANDOM_NUMBER_RANGE));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                RedisLockTool.releaseDistributedLock();
+                System.out.println(Thread.currentThread().getName() + "： release lock");
             }
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            RedisLockTool.releaseDistributedLock("test", requestId);
-            System.out.println(Thread.currentThread().getName() + "： 释放锁");
         }
     }
 }
+
