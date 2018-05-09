@@ -1,7 +1,7 @@
 # spring-data-redis-tools
-- RedisTemplate封装工具类  
-- 可视化分布式ID生成器  
-- 分布式锁工具类
+- RedisTemplate封装工具类 `redisTools`
+- 可视化分布式ID生成器 `distributedId`
+- 分布式锁工具类 `distributedLock`
 ***
 ## Maven
 ```xml
