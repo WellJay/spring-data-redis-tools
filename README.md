@@ -77,7 +77,7 @@ public class RedisConfiguration {
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
         //设置普通value序列化方式
-        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
         return redisTemplate;
     }
