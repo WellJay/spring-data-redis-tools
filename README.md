@@ -1,7 +1,7 @@
 # spring-data-redis-tools
 - RedisTemplate封装工具类 `redisTools`
 - 可视化分布式ID生成器 `distributedId`
-- 可靠分布式锁工具类 `distributedLock`（lua脚本实现原子性解决断电问题、valueId避免错误释放问题）
+- 可靠分布式锁工具类 `distributedLock`（lua脚本实现原子性解决断电问题、valueId避免错误释放问题） redis集群情况下推荐[RedLock](https://github.com/redisson/redisson)
 ***
 ## Maven
 ```xml
