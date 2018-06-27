@@ -2,6 +2,7 @@
 - RedisTemplate封装工具类 `redisTools`
 - 可视化分布式ID生成器 `distributedId`
 - 可靠分布式锁工具类 `distributedLock`（lua脚本实现原子性解决断电问题、valueId避免错误释放问题）
+- [Redis技术总结思维导图](#jump)   
 ***
 ## Maven
 ```xml
@@ -101,3 +102,8 @@ private RedisCacheUtil redisCacheUtil;
 ```java
 @Cacheable(value = Constants.Redis.SYSTEM, key = ACTIONS_CACHE_KEY)
 ```
+## Redis技术总结<span id = "jump"></span>
+![](Redis技术总结.png)
+
+
+
