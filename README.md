@@ -102,7 +102,8 @@ private RedisCacheUtil redisCacheUtil;
 ```java
 @Cacheable(value = Constants.Redis.SYSTEM, key = ACTIONS_CACHE_KEY)
 ```
-## Redis技术总结<span id = "jump"></span>
+## Redis技术总结
+<span id = "jump"></span>
 ![](Redis技术总结.png)
 
 
