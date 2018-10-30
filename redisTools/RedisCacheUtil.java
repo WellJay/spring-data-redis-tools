@@ -187,4 +187,166 @@ public class RedisCacheUtil<T> {
         Map<Integer, T> map = redisTemplate.opsForHash().entries(key);
         return map;
     }
+
+
+    //=====================GEO地理位置相关=====================
+
+    /**
+     * 增加定位点
+     *
+     * @param x
+     * @param y
+     * @param member
+     * @param time
+     * @return
+     */
+    public boolean addGeo(double x, double y, String member, long time) {
+        String key = GEO_KEY;
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+            geoOps.add(key, new Point(x, y), member);
+            if (time > 0) {
+                redisTemplate.expire(key, time, TimeUnit.SECONDS);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            log.error("缓存[" + key + "]" + "失败, point[" + x + "," +
+                    y + "], member[" + member + "]" + ", error[" + t + "]");
+        }
+        return true;
+    }
+
+
+    /**
+     * 删除定位点
+     *
+     * @param members
+     * @return
+     */
+    public boolean removeGeo(String... members) {
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+            geoOps.remove(GEO_KEY, members);
+        } catch (Throwable t) {
+            log.error("移除[" + GEO_KEY + "]" + "失败" + ", error[" + t + "]");
+        }
+        return true;
+    }
+
+
+    /**
+     * 计算定位距离
+     *
+     * @param member1
+     * @param member2
+     * @return
+     */
+    public Distance distanceGeo(String member1, String member2) {
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+            return geoOps.geoDist(GEO_KEY, member1, member2);
+        } catch (Throwable t) {
+            log.error("计算距离[" + GEO_KEY + "]" + "失败, member[" + member1 + "," + member2 + "], error[" + t + "]");
+        }
+        return null;
+    }
+
+    /**
+     * 获取坐标
+     *
+     * @param members
+     * @return
+     */
+    public List<Point> getGeo(String... members) {
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+            return geoOps.position(GEO_KEY, members);
+        } catch (Throwable t) {
+            log.error("获取坐标[" + GEO_KEY + "]" + "失败]" + ", error[" + t + "]");
+        }
+        return null;
+    }
+
+    /**
+     * 基于某个坐标的附近的东西
+     *
+     * @param x
+     * @param y
+     * @param distance
+     * @param direction
+     */
+    public List<GeoRadiusDto> raduisGeo(double x, double y, double distance, Sort.Direction direction) {
+        List<GeoRadiusDto> radiusDtos = new ArrayList<>();
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+
+            //设置geo查询参数
+            RedisGeoCommands.GeoRadiusCommandArgs geoRadiusArgs = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs();
+            geoRadiusArgs = geoRadiusArgs.includeCoordinates().includeDistance();//查询返回结果包括距离和坐标
+            if (Sort.Direction.ASC.equals(direction)) {//按查询出的坐标距离中心坐标的距离进行排序
+                geoRadiusArgs.sortAscending();
+            } else if (Sort.Direction.DESC.equals(direction)) {
+                geoRadiusArgs.sortDescending();
+            }
+            GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = geoOps.radius(GEO_KEY, new Circle(new Point(x, y), new Distance(distance, RedisGeoCommands.DistanceUnit.METERS)), geoRadiusArgs);
+
+            List<GeoResult<RedisGeoCommands.GeoLocation<String>>> geoResultList = geoResults.getContent();
+            for (GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult : geoResultList) {
+                String name = geoResult.getContent().getName();
+                Point point = geoResult.getContent().getPoint();
+                GeoRadiusDto radiusDto = new GeoRadiusDto();
+                radiusDto.setMember(name);
+                radiusDto.setX(point.getX());
+                radiusDto.setY(point.getY());
+                radiusDtos.add(radiusDto);
+            }
+        } catch (Throwable t) {
+
+        }
+        return radiusDtos;
+    }
+
+
+    /**
+     * 基于某个key的附近的东西
+     *
+     * @param member
+     * @param distance
+     * @param direction
+     */
+    public List<GeoRadiusDto> raduisGeo(String member, double distance, Sort.Direction direction) {
+        List<GeoRadiusDto> radiusDtos = new ArrayList<>();
+        try {
+            GeoOperations<String, String> geoOps = redisTemplate.opsForGeo();
+
+            //设置geo查询参数
+            RedisGeoCommands.GeoRadiusCommandArgs geoRadiusArgs = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs();
+            geoRadiusArgs = geoRadiusArgs.includeCoordinates().includeDistance();//查询返回结果包括距离和坐标
+            if (Sort.Direction.ASC.equals(direction)) {//按查询出的坐标距离中心坐标的距离进行排序
+                geoRadiusArgs.sortAscending();
+            } else if (Sort.Direction.DESC.equals(direction)) {
+                geoRadiusArgs.sortDescending();
+            }
+            GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = geoOps.radius(GEO_KEY, member, new Distance(distance, RedisGeoCommands.DistanceUnit.METERS), geoRadiusArgs);
+
+            List<GeoResult<RedisGeoCommands.GeoLocation<String>>> geoResultList = geoResults.getContent();
+            for (GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult : geoResultList) {
+                String name = geoResult.getContent().getName();
+                //结果集排除自己
+                if (!name.equals(member)) {
+                    Point point = geoResult.getContent().getPoint();
+                    GeoRadiusDto radiusDto = new GeoRadiusDto();
+                    radiusDto.setMember(name);
+                    radiusDto.setX(point.getX());
+                    radiusDto.setY(point.getY());
+                    radiusDtos.add(radiusDto);
+                }
+            }
+        } catch (Throwable t) {
+
+        }
+        return radiusDtos;
+    }
+
+
 }
