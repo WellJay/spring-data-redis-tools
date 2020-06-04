@@ -100,7 +100,7 @@ private RedisCacheUtil redisCacheUtil;
 ```
 2、Spring注解方式适用于简单的数据缓存
 ```java
-@Cacheable(value = Constants.Redis.SYSTEM, key = ACTIONS_CACHE_KEY)
+@Cacheable(value = Constants.RedisKey.XXX_KEY)
 ```
 ## Redis技术总结
 ![](Redis技术总结.png)
