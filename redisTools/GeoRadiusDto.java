@@ -1,4 +1,6 @@
-
+/**
+ * 地理位置相关dto
+ */
 public class GeoRadiusDto {
 
     private String member;
